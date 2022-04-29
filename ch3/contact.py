@@ -78,3 +78,7 @@ class Order:
 
 
 orders: list[Any] = []
+
+if __name__ == "__main__":
+    c1 = Contact("Nico", "nico.com")
+    print(c1)
