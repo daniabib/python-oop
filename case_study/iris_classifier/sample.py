@@ -3,6 +3,8 @@ from typing import Iterable, Optional
 import weakref
 import datetime
 from typing import List
+from math import hypot
+
 
 class Sample:
 
@@ -116,3 +118,104 @@ class TrainingData:
         sample.classify(classification)
         return sample
 
+
+class Distance:
+    """Definition of a distance computation"""
+
+    def distance(self, s1: Sample, s2: Sample) -> float:
+        pass
+
+
+class ED(Distance):
+    """Computes Euclidean Distance between two samples."""
+
+    def distance(self, s1: Sample, s2: Sample) -> float:
+        return hypot(
+            s1.sepal_length - s2.sepal_length,
+            s1.sepal_width - s2.sepal_width,
+            s1.petal_length - s2.petal_length,
+            s1.petal_width - s2.petal_width,
+        )
+
+
+class MD(Distance):
+    """Computes Manhattan Distance between two samples."""
+
+    def distance(self, s1: Sample, s2: Sample) -> float:
+        return sum([
+            abs(s1.sepal_length - s2.sepal_length),
+            abs(s1.sepal_width - s2.sepal_width),
+            abs(s1.petal_length - s2.petal_length),
+            abs(s1.petal_width - s2.petal_width),
+        ])
+
+
+class CD(Distance):
+    """Computes Chebyshev Distance between two samples."""
+
+    def distance(self, s1: Sample, s2: Sample) -> float:
+        return max([
+            abs(s1.sepal_length - s2.sepal_length),
+            abs(s1.sepal_width - s2.sepal_width),
+            abs(s1.petal_length - s2.petal_length),
+            abs(s1.petal_width - s2.petal_width),
+        ])
+
+
+class SD(Distance):
+    """Computes Sorensen Distance between two samples."""
+
+    def distance(self, s1: Sample, s2: Sample) -> float:
+        return sum([
+            abs(s1.sepal_length - s2.sepal_length),
+            abs(s1.sepal_width - s2.sepal_width),
+            abs(s1.petal_length - s2.petal_length),
+            abs(s1.petal_width - s2.petal_width),
+        ]) / sum([
+            s1.sepal_length + s2.sepal_length,
+            s1.sepal_width + s2.sepal_width,
+            s1.petal_length + s2.petal_length,
+            s1.petal_width + s2.petal_width,
+        ])
+
+
+if __name__ == "__main__":
+    import time
+
+    s1 = Sample(4.3, 2.1, 1.2, 1.8, "setosa")
+    s2 = Sample(2.3, 1.5, 2.5, 2.7, "setosa")
+    print(s1)
+
+    ed = ED()
+    print(ed.distance(s1, s2))
+    md = MD()
+    print(md.distance(s1, s2))
+    cd = CD()
+    print(cd.distance(s1, s2))
+    sd = SD()
+    print(sd.distance(s1, s2))
+
+    loop_count = 1000000
+    start = time.perf_counter()
+    for i in range(loop_count):
+        ed.distance(s1, s2)
+    stop = time.perf_counter()
+    print(f"ED time: {stop - start:0.4f} seconds")
+
+    start = time.perf_counter()
+    for i in range(loop_count):
+        md.distance(s1, s2)
+    stop = time.perf_counter()
+    print(f"MD time: {stop - start:0.4f} seconds")
+
+    start = time.perf_counter()
+    for i in range(loop_count):
+        cd.distance(s1, s2)
+    stop = time.perf_counter()
+    print(f"CD time: {stop - start:0.4f} seconds")
+    
+    start = time.perf_counter()
+    for i in range(loop_count):
+        sd.distance(s1, s2)
+    stop = time.perf_counter()
+    print(f"SD time: {stop - start:0.4f} seconds")

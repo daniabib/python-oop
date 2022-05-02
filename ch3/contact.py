@@ -70,7 +70,7 @@ class MailSender(Emailable):
 
 
 class EmaiableContact(Contact, MailSender):
-    ...
+    pass
 
 
 class Order:
@@ -80,5 +80,7 @@ class Order:
 orders: list[Any] = []
 
 if __name__ == "__main__":
-    c1 = Contact("Nico", "nico.com")
-    print(c1)
+    c1 = Contact("John A", "johna@example.net")
+    c2 = Contact("John B", "johnb@sloop.net")
+    c3 = Contact("Jenna C", "cutty@sark.io")
+    print([c.name for c in Contact.all_contacts.search('John')])
